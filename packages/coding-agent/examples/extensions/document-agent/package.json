@@ -1,0 +1,24 @@
+{
+	"name": "pi-extension-document-agent",
+	"private": true,
+	"version": "0.79.9",
+	"type": "module",
+	"scripts": {
+		"clean": "echo 'nothing to clean'",
+		"build": "echo 'nothing to build'",
+		"check": "echo 'nothing to check'"
+	},
+	"pi": {
+		"extensions": [
+			"./index.ts"
+		]
+	},
+	"dependencies": {
+		"@earendil-works/pi-agent-core": "0.79.9",
+		"@earendil-works/pi-ai": "0.79.9",
+		"@earendil-works/pi-coding-agent": "0.79.9",
+		"typebox": "1.1.38",
+		"unpdf": "0.11.0",
+		"xlsx": "0.18.5"
+	}
+}

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Launcher for PI Document Agent.
+# Sets PI_APP_NAME before Node starts so config.ts picks it up at module-load time.
+set -euo pipefail
+export PI_APP_NAME="pi-document-agent"
+exec npx tsx "$(dirname "$0")/pi-document-agent.ts" "$@"
