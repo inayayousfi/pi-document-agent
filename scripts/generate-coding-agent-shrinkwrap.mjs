@@ -13,6 +13,7 @@ const internalPackagePrefix = "@earendil-works/pi-";
 const allowedInstallScriptPackages = new Map([
 	["@google/genai@1.52.0", "preinstall is a no-op in the published package"],
 	["protobufjs@7.6.4", "postinstall only warns about protobufjs version scheme mismatches"],
+	["canvas@2.11.2", "optional peer of unpdf for page rendering; only used if canvas is available at runtime"],
 ]);
 
 const args = new Set(process.argv.slice(2));
