@@ -3,7 +3,6 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { AnthropicMessagesCompat, Api, Context, Model, OpenAICompletionsCompat } from "@earendil-works/pi-ai";
 import { getApiProvider } from "@earendil-works/pi-ai";
-import { getOAuthProvider } from "@earendil-works/pi-ai/oauth";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { AuthStorage } from "../src/core/auth-storage.ts";
 import { clearApiKeyCache, ModelRegistry, type ProviderConfigInput } from "../src/core/model-registry.ts";
@@ -880,11 +879,10 @@ describe("ModelRegistry", () => {
 	});
 
 	describe("dynamic provider lifecycle", () => {
-		test("getProviderDisplayName resolves registered, OAuth, built-in, and fallback names", () => {
+		test("getProviderDisplayName resolves registered, built-in, and fallback names", () => {
 			const registry = ModelRegistry.create(authStorage, modelsJsonPath);
 
 			expect(registry.getProviderDisplayName("openai")).toBe("OpenAI");
-			expect(registry.getProviderDisplayName("github-copilot")).toBe("GitHub Copilot");
 			expect(registry.getProviderDisplayName("unknown-provider")).toBe("unknown-provider");
 
 			registry.registerProvider("named-provider", {
@@ -905,29 +903,6 @@ describe("ModelRegistry", () => {
 				],
 			});
 			expect(registry.getProviderDisplayName("named-provider")).toBe("Named Provider");
-
-			registry.registerProvider("oauth-provider", {
-				baseUrl: "https://provider.test/v1",
-				api: "openai-completions",
-				oauth: {
-					name: "OAuth Provider",
-					login: async () => ({ access: "access", refresh: "refresh", expires: Date.now() + 60_000 }),
-					refreshToken: async (credentials) => credentials,
-					getApiKey: (credentials) => credentials.access,
-				},
-				models: [
-					{
-						id: "demo-model",
-						name: "Demo Model",
-						reasoning: false,
-						input: ["text"],
-						cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
-						contextWindow: 128000,
-						maxTokens: 4096,
-					},
-				],
-			});
-			expect(registry.getProviderDisplayName("oauth-provider")).toBe("OAuth Provider");
 		});
 
 		test("stored API key env propagates to request auth and resolves headers", async () => {
@@ -1072,29 +1047,6 @@ describe("ModelRegistry", () => {
 			expect(registry.find("demo-provider", "demo-model")).toBeDefined();
 			expect(() => registry.refresh()).not.toThrow();
 			expect(registry.find("demo-provider", "demo-model")).toBeDefined();
-		});
-
-		test("unregisterProvider removes custom OAuth provider and restores built-in OAuth provider", () => {
-			const registry = ModelRegistry.create(authStorage, modelsJsonPath);
-
-			registry.registerProvider("anthropic", {
-				oauth: {
-					name: "Custom Anthropic OAuth",
-					login: async () => ({
-						access: "custom-access-token",
-						refresh: "custom-refresh-token",
-						expires: Date.now() + 60_000,
-					}),
-					refreshToken: async (credentials) => credentials,
-					getApiKey: (credentials) => credentials.access,
-				},
-			});
-
-			expect(getOAuthProvider("anthropic")?.name).toBe("Custom Anthropic OAuth");
-
-			registry.unregisterProvider("anthropic");
-
-			expect(getOAuthProvider("anthropic")?.name).not.toBe("Custom Anthropic OAuth");
 		});
 
 		test("unregisterProvider removes custom streamSimple override and restores built-in API stream handler", () => {
@@ -1704,25 +1656,6 @@ describe("ModelRegistry", () => {
 				expect(available.some((m) => m.provider === "custom-provider")).toBe(true);
 				const count = parseInt(readFileSync(counterFile, "utf-8").trim(), 10);
 				expect(count).toBe(0);
-			});
-
-			test("getAvailable filters GitHub Copilot OAuth models to account picker availability", () => {
-				authStorage.set("github-copilot", {
-					type: "oauth",
-					refresh: "github-access-token",
-					access: "tid=test;exp=9999999999;proxy-ep=proxy.individual.githubcopilot.com;",
-					expires: Date.now() + 60_000,
-					availableModelIds: ["gpt-4.1"],
-				});
-
-				const registry = ModelRegistry.create(authStorage, modelsJsonPath);
-
-				expect(
-					registry
-						.getAvailable()
-						.filter((m) => m.provider === "github-copilot")
-						.map((m) => m.id),
-				).toEqual(["gpt-4.1"]);
 			});
 
 			test("getApiKeyAndHeaders resolves authHeader on every request", async () => {

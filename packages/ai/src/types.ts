@@ -3,60 +3,16 @@ import type { AssistantMessageEventStream } from "./utils/event-stream.ts";
 
 export type { AssistantMessageEventStream } from "./utils/event-stream.ts";
 
-export type KnownApi =
-	| "openai-completions"
-	| "mistral-conversations"
-	| "openai-responses"
-	| "azure-openai-responses"
-	| "openai-codex-responses"
-	| "anthropic-messages"
-	| "bedrock-converse-stream"
-	| "google-generative-ai"
-	| "google-vertex";
+export type KnownApi = "openai-completions";
 
 export type Api = KnownApi | (string & {});
 
-export type KnownImagesApi = "openrouter-images";
+export type KnownImagesApi = never;
 
 export type ImagesApi = KnownImagesApi | (string & {});
 
-export type KnownProvider =
-	| "amazon-bedrock"
-	| "ant-ling"
-	| "anthropic"
-	| "google"
-	| "google-vertex"
-	| "openai"
-	| "azure-openai-responses"
-	| "openai-codex"
-	| "nvidia"
-	| "deepseek"
-	| "github-copilot"
-	| "xai"
-	| "groq"
-	| "cerebras"
-	| "openrouter"
-	| "vercel-ai-gateway"
-	| "zai"
-	| "zai-coding-cn"
-	| "mistral"
-	| "minimax"
-	| "minimax-cn"
-	| "moonshotai"
-	| "moonshotai-cn"
-	| "huggingface"
-	| "fireworks"
-	| "together"
-	| "opencode"
-	| "opencode-go"
-	| "kimi-coding"
-	| "cloudflare-workers-ai"
-	| "cloudflare-ai-gateway"
-	| "xiaomi"
-	| "xiaomi-token-plan-cn"
-	| "xiaomi-token-plan-ams"
-	| "xiaomi-token-plan-sgp";
-export type Provider = KnownProvider | string;
+export type KnownProvider = never;
+export type Provider = string;
 
 export type KnownImagesProvider = "openrouter";
 
@@ -611,13 +567,7 @@ export interface Model<TApi extends Api> {
 	maxTokens: number;
 	headers?: Record<string, string>;
 	/** Compatibility overrides for OpenAI-compatible APIs. If not set, auto-detected from baseUrl. */
-	compat?: TApi extends "openai-completions"
-		? OpenAICompletionsCompat
-		: TApi extends "openai-responses"
-			? OpenAIResponsesCompat
-			: TApi extends "anthropic-messages"
-				? AnthropicMessagesCompat
-				: never;
+	compat?: OpenAICompletionsCompat;
 }
 
 export interface ImagesModel<TApi extends ImagesApi>

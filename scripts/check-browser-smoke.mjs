@@ -8,16 +8,7 @@ const baseOutputPath = join(tmpdir(), "pi-browser-base-smoke.js");
 const selectiveOutputPath = join(tmpdir(), "pi-browser-selective-smoke.js");
 const errorLogPath = join(tmpdir(), "pi-browser-smoke-errors.log");
 const providerImplementationInputs = [
-	"packages/ai/src/providers/amazon-bedrock.ts",
-	"packages/ai/src/providers/anthropic.ts",
-	"packages/ai/src/providers/azure-openai-responses.ts",
-	"packages/ai/src/providers/google.ts",
-	"packages/ai/src/providers/google-vertex.ts",
-	"packages/ai/src/providers/images/openrouter.ts",
-	"packages/ai/src/providers/mistral.ts",
-	"packages/ai/src/providers/openai-codex-responses.ts",
 	"packages/ai/src/providers/openai-completions.ts",
-	"packages/ai/src/providers/openai-responses.ts",
 ];
 
 try {
@@ -49,7 +40,7 @@ try {
 	}
 	await build({
 		stdin: {
-			contents: `import { register as registerAnthropic } from "@earendil-works/pi-ai/anthropic";\nimport { register as registerOpenAICompletions } from "@earendil-works/pi-ai/openai-completions";\nimport { register as registerOpenRouterImages } from "@earendil-works/pi-ai/openrouter-images";\nconsole.log(typeof registerAnthropic, typeof registerOpenAICompletions, typeof registerOpenRouterImages);\n`,
+			contents: `import { register as registerOpenAICompletions } from "@earendil-works/pi-ai/openai-completions";\nconsole.log(typeof registerOpenAICompletions);\n`,
 			resolveDir: process.cwd(),
 			sourcefile: "pi-browser-selective-smoke-entry.ts",
 		},

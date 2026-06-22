@@ -5,6 +5,8 @@
  * createAgentSession() options. The SDK does the heavy lifting.
  */
 
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { dirname } from "node:path";
 import { createInterface } from "node:readline";
 import { type ImageContent, modelsAreEqual } from "@earendil-works/pi-ai";
 import chalk from "chalk";
@@ -14,8 +16,13 @@ import { buildInitialMessage } from "./cli/initial-message.ts";
 import { listModels } from "./cli/list-models.ts";
 import { createProjectTrustContext } from "./cli/project-trust.ts";
 import { selectSession } from "./cli/session-picker.ts";
-import { shouldRunFirstTimeSetup, showFirstTimeSetup, showStartupSelector } from "./cli/startup-ui.ts";
-import { ENV_SESSION_DIR, expandTildePath, getAgentDir, getPackageDir, VERSION } from "./config.ts";
+import {
+	shouldRunFirstTimeSetup,
+	showFirstTimeSetup,
+	showProviderSetup,
+	showStartupSelector,
+} from "./cli/startup-ui.ts";
+import { ENV_SESSION_DIR, expandTildePath, getAgentDir, getModelsPath, getPackageDir, VERSION } from "./config.ts";
 import { type CreateAgentSessionRuntimeFactory, createAgentSessionRuntime } from "./core/agent-session-runtime.ts";
 import {
 	type AgentSessionRuntimeDiagnostic,
@@ -552,6 +559,37 @@ export async function main(args: string[], options?: MainOptions) {
 	if (appMode === "interactive" && !parsed.help && parsed.listModels === undefined && shouldRunFirstTimeSetup()) {
 		await showFirstTimeSetup(startupSettingsManager);
 		time("firstTimeSetup");
+	}
+
+	// Provider setup: run when no models.json exists so the user can configure their endpoint.
+	const modelsJsonPath = getModelsPath();
+	if (appMode === "interactive" && !parsed.help && parsed.listModels === undefined && !existsSync(modelsJsonPath)) {
+		const result = await showProviderSetup(startupSettingsManager);
+		if (result) {
+			const config = {
+				providers: {
+					default: {
+						baseUrl: result.baseUrl,
+						...(result.apiKey ? { apiKey: result.apiKey } : {}),
+						api: "openai-completions",
+						models: [
+							{
+								id: result.modelId,
+								name: result.modelId,
+								contextWindow: 128000,
+								maxTokens: 16384,
+							},
+						],
+					},
+				},
+			};
+			const dir = dirname(modelsJsonPath);
+			if (!existsSync(dir)) {
+				mkdirSync(dir, { recursive: true });
+			}
+			writeFileSync(modelsJsonPath, JSON.stringify(config, null, 2), "utf-8");
+		}
+		time("providerSetup");
 	}
 
 	// Decide the final runtime cwd before creating cwd-bound runtime services.

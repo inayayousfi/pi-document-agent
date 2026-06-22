@@ -32,7 +32,6 @@ export {
 	type AuthStorageBackend,
 	FileAuthStorageBackend,
 	InMemoryAuthStorageBackend,
-	type OAuthCredential,
 } from "./core/auth-storage.ts";
 // Compaction
 export {
@@ -340,9 +339,7 @@ export {
 	FooterComponent,
 	keyHint,
 	keyText,
-	LoginDialogComponent,
 	ModelSelectorComponent,
-	OAuthSelectorComponent,
 	type RenderDiffOptions,
 	rawKeyHint,
 	renderDiff,

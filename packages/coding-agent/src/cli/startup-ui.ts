@@ -145,6 +145,37 @@ export async function showFirstTimeSetup(settingsManager: SettingsManager): Prom
 	});
 }
 
+export interface ProviderSetupResult {
+	baseUrl: string;
+	apiKey: string;
+	modelId: string;
+}
+
+/**
+ * Interactive setup: collect base URL, API key, and model ID, then write to models.json.
+ * Returns undefined if the user cancelled.
+ */
+export async function showProviderSetup(settingsManager: SettingsManager): Promise<ProviderSetupResult | undefined> {
+	const baseUrl = await showStartupInput(
+		settingsManager,
+		"Enter the base URL of your OpenAI-compatible endpoint",
+		"https://api.openai.com/v1",
+	);
+	if (!baseUrl) return undefined;
+
+	const apiKey = await showStartupInput(
+		settingsManager,
+		"Enter your API key (leave empty for local/no-auth endpoints)",
+		"sk-...",
+	);
+	if (apiKey === undefined) return undefined; // cancelled
+
+	const modelId = await showStartupInput(settingsManager, "Enter the model ID to use", "gpt-4o");
+	if (!modelId) return undefined;
+
+	return { baseUrl: baseUrl.trim(), apiKey: apiKey.trim(), modelId: modelId.trim() };
+}
+
 export async function showStartupInput(
 	settingsManager: SettingsManager,
 	title: string,

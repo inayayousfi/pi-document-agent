@@ -1,6 +1,20 @@
-import { fauxAssistantMessage, fauxToolCall, getModel, registerFauxProvider } from "@earendil-works/pi-ai";
+import { fauxAssistantMessage, fauxToolCall, type Model, registerFauxProvider } from "@earendil-works/pi-ai";
 import { afterEach, describe, expect, it } from "vitest";
 import { AgentHarness } from "../../src/harness/agent-harness.ts";
+
+const testModel: Model<"openai-completions"> = {
+	id: "test-model",
+	name: "Test Model",
+	api: "openai-completions",
+	provider: "test",
+	baseUrl: "http://localhost:0",
+	reasoning: false,
+	input: ["text", "image"],
+	cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+	contextWindow: 128000,
+	maxTokens: 16384,
+};
+
 import { NodeExecutionEnv } from "../../src/harness/env/nodejs.ts";
 import { InMemorySessionStorage } from "../../src/harness/session/memory-storage.ts";
 import { Session } from "../../src/harness/session/session.ts";
@@ -54,7 +68,7 @@ describe("AgentHarness", () => {
 	it("constructs directly and exposes queue modes", () => {
 		const session = new Session(new InMemorySessionStorage());
 		const env = new NodeExecutionEnv({ cwd: process.cwd() });
-		const initialModel = getModel("anthropic", "claude-sonnet-4-5");
+		const initialModel = testModel;
 		const harness = new AgentHarness({
 			env,
 			session,
@@ -457,7 +471,7 @@ describe("AgentHarness", () => {
 	it("preserves app tool types for getters and update events", async () => {
 		const session = new Session(new InMemorySessionStorage());
 		const env = new NodeExecutionEnv({ cwd: process.cwd() });
-		const model = getModel("anthropic", "claude-sonnet-4-5");
+		const model = testModel;
 		type AppTool = AgentTool<typeof calculateTool.parameters, undefined> & { source: "builtin" | "extension" };
 		const inspectTool: AppTool = { ...calculateTool, name: "inspect", source: "builtin" };
 		const searchTool: AppTool = { ...calculateTool, name: "search", source: "extension" };
@@ -528,7 +542,7 @@ describe("AgentHarness", () => {
 	it("validates constructor tool names", () => {
 		const session = new Session(new InMemorySessionStorage());
 		const env = new NodeExecutionEnv({ cwd: process.cwd() });
-		const model = getModel("anthropic", "claude-sonnet-4-5");
+		const model = testModel;
 		expect(
 			() => new AgentHarness({ env, session, model, tools: [calculateTool], activeToolNames: ["missing"] }),
 		).toThrow(/Unknown tool/);
@@ -557,7 +571,7 @@ describe("AgentHarness", () => {
 	it("preserves app resource types for getters and update events", async () => {
 		const session = new Session(new InMemorySessionStorage());
 		const env = new NodeExecutionEnv({ cwd: process.cwd() });
-		const model = getModel("anthropic", "claude-sonnet-4-5");
+		const model = testModel;
 		const harness = new AgentHarness<AppSkill, AppPromptTemplate, AgentTool>({ env, session, model });
 		const skill: AppSkill = {
 			name: "inspect",

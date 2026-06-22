@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { streamSimple } from "../src/index.ts";
-import { getModel } from "../src/models.ts";
+import { makeModel } from "./model-helpers.ts";
 
 // Empty tools arrays must NOT be serialized as `tools: []` — some OpenAI-compatible
 // backends (e.g. DashScope / Aliyun Qwen via compatible-mode) reject the request with
@@ -61,7 +61,7 @@ describe("openai-completions empty tools handling", () => {
 	});
 
 	it("omits tools field when context.tools is an empty array", async () => {
-		const { compat: _compat, ...baseModel } = getModel("openai", "gpt-4o-mini")!;
+		const { compat: _compat, ...baseModel } = makeModel("openai", "gpt-4o-mini");
 		const model = { ...baseModel, api: "openai-completions" } as const;
 
 		await streamSimple(
@@ -78,7 +78,7 @@ describe("openai-completions empty tools handling", () => {
 	});
 
 	it("omits tools field when context.tools is undefined", async () => {
-		const { compat: _compat, ...baseModel } = getModel("openai", "gpt-4o-mini")!;
+		const { compat: _compat, ...baseModel } = makeModel("openai", "gpt-4o-mini");
 		const model = { ...baseModel, api: "openai-completions" } as const;
 
 		await streamSimple(
@@ -94,7 +94,7 @@ describe("openai-completions empty tools handling", () => {
 	});
 
 	it("does not send default max token fields", async () => {
-		const { compat: _compat, ...baseModel } = getModel("openai", "gpt-4o-mini")!;
+		const { compat: _compat, ...baseModel } = makeModel("openai", "gpt-4o-mini");
 		const model = { ...baseModel, api: "openai-completions" } as const;
 
 		await streamSimple(
@@ -111,7 +111,7 @@ describe("openai-completions empty tools handling", () => {
 	});
 
 	it("sends explicit maxTokens", async () => {
-		const { compat: _compat, ...baseModel } = getModel("openai", "gpt-4o-mini")!;
+		const { compat: _compat, ...baseModel } = makeModel("openai", "gpt-4o-mini");
 		const model = { ...baseModel, api: "openai-completions" } as const;
 
 		await streamSimple(
@@ -130,7 +130,7 @@ describe("openai-completions empty tools handling", () => {
 	it("uses conservative OpenAI-compatible fields for Cloudflare AI Gateway /compat models", async () => {
 		process.env.CLOUDFLARE_ACCOUNT_ID = "account-id";
 		process.env.CLOUDFLARE_GATEWAY_ID = "gateway-id";
-		const model = getModel("cloudflare-ai-gateway", "workers-ai/@cf/moonshotai/kimi-k2.6")!;
+		const model = makeModel("cloudflare-ai-gateway", "workers-ai/@cf/moonshotai/kimi-k2.6");
 
 		await streamSimple(
 			model,
@@ -166,7 +166,7 @@ describe("openai-completions empty tools handling", () => {
 	it("uses provider env before process.env for Cloudflare AI Gateway base URL", async () => {
 		process.env.CLOUDFLARE_ACCOUNT_ID = "process-account";
 		process.env.CLOUDFLARE_GATEWAY_ID = "process-gateway";
-		const model = getModel("cloudflare-ai-gateway", "workers-ai/@cf/moonshotai/kimi-k2.6")!;
+		const model = makeModel("cloudflare-ai-gateway", "workers-ai/@cf/moonshotai/kimi-k2.6");
 
 		await streamSimple(
 			model,
@@ -191,7 +191,7 @@ describe("openai-completions empty tools handling", () => {
 	it("preserves inline upstream Authorization for Cloudflare AI Gateway BYOK requests", async () => {
 		process.env.CLOUDFLARE_ACCOUNT_ID = "account-id";
 		process.env.CLOUDFLARE_GATEWAY_ID = "gateway-id";
-		const model = getModel("cloudflare-ai-gateway", "gpt-5.1")!;
+		const model = makeModel("cloudflare-ai-gateway", "gpt-5.1");
 
 		await streamSimple(
 			model,
@@ -209,7 +209,7 @@ describe("openai-completions empty tools handling", () => {
 	it("sends session affinity headers for Workers AI through Cloudflare AI Gateway", async () => {
 		process.env.CLOUDFLARE_ACCOUNT_ID = "account-id";
 		process.env.CLOUDFLARE_GATEWAY_ID = "gateway-id";
-		const workersModel = getModel("cloudflare-ai-gateway", "workers-ai/@cf/moonshotai/kimi-k2.6")!;
+		const workersModel = makeModel("cloudflare-ai-gateway", "workers-ai/@cf/moonshotai/kimi-k2.6");
 
 		await streamSimple(
 			workersModel,
@@ -226,7 +226,7 @@ describe("openai-completions empty tools handling", () => {
 	});
 
 	it("still emits tools: [] for Anthropic/LiteLLM proxy when conversation has tool history", async () => {
-		const { compat: _compat, ...baseModel } = getModel("openai", "gpt-4o-mini")!;
+		const { compat: _compat, ...baseModel } = makeModel("openai", "gpt-4o-mini");
 		const model = { ...baseModel, api: "openai-completions" } as const;
 
 		await streamSimple(

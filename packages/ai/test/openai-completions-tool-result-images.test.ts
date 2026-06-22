@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { getModel } from "../src/models.ts";
 import { convertMessages } from "../src/providers/openai-completions.ts";
 import type {
 	AssistantMessage,
@@ -9,6 +8,7 @@ import type {
 	ToolResultMessage,
 	Usage,
 } from "../src/types.ts";
+import { makeModel } from "./model-helpers.ts";
 
 const emptyUsage: Usage = {
 	input: 0,
@@ -56,7 +56,7 @@ function buildToolResult(toolCallId: string, timestamp: number): ToolResultMessa
 
 describe("openai-completions convertMessages", () => {
 	it("batches tool-result images after consecutive tool results", () => {
-		const { compat: _compat, ...baseModel } = getModel("openai", "gpt-4o-mini");
+		const { compat: _compat, ...baseModel } = makeModel("openai", "gpt-4o-mini");
 		const model: Model<"openai-completions"> = {
 			...baseModel,
 			api: "openai-completions",

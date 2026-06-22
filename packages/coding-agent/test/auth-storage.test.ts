@@ -619,22 +619,16 @@ describe("AuthStorage", () => {
 	});
 
 	describe("auth status", () => {
-		test("does not expose stored API keys or OAuth tokens", () => {
+		test("does not expose stored API keys", () => {
 			authStorage = AuthStorage.inMemory({
 				anthropic: { type: "api_key", key: "secret-api-key" },
-				openai: {
-					type: "oauth",
-					access: "secret-access-token",
-					refresh: "secret-refresh-token",
-					expires: Date.now() + 1000,
-				},
+				openai: { type: "api_key", key: "secret-openai-key" },
 			});
 
 			expect(authStorage.getAuthStatus("anthropic")).toEqual({ configured: true, source: "stored" });
 			expect(authStorage.getAuthStatus("openai")).toEqual({ configured: true, source: "stored" });
 			expect(JSON.stringify(authStorage.getAuthStatus("anthropic"))).not.toContain("secret-api-key");
-			expect(JSON.stringify(authStorage.getAuthStatus("openai"))).not.toContain("secret-access-token");
-			expect(JSON.stringify(authStorage.getAuthStatus("openai"))).not.toContain("secret-refresh-token");
+			expect(JSON.stringify(authStorage.getAuthStatus("openai"))).not.toContain("secret-openai-key");
 		});
 	});
 

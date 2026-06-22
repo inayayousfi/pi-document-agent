@@ -1,4 +1,2 @@
-import { setBedrockProviderModule } from "@earendil-works/pi-ai";
-import { bedrockProviderModule } from "@earendil-works/pi-ai/bedrock-provider";
-
-setBedrockProviderModule(bedrockProviderModule);
+// Bedrock provider removed - only OpenAI-compatible provider is supported.
+export {};
