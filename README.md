@@ -13,7 +13,7 @@ npm install --ignore-scripts
 npm run build:document-agent
 ```
 
-This produces `packages/coding-agent/dist/pi-document-agent.mjs` — a single bundled script.
+This produces `packages/coding-agent/dist/pi-document-agent` — a self-contained executable with Node.js embedded (no runtime required on the target machine).
 
 ### 2. Configure your endpoint
 
@@ -28,13 +28,13 @@ This is saved to `~/.pi/models.json` and never asked again. You can also run `/l
 ### 3. Run
 
 ```bash
-./packages/coding-agent/dist/pi-document-agent.mjs
+./packages/coding-agent/dist/pi-document-agent
 ```
 
 Or copy it anywhere on your `PATH`:
 
 ```bash
-cp packages/coding-agent/dist/pi-document-agent.mjs /usr/local/bin/pi-document-agent
+cp packages/coding-agent/dist/pi-document-agent /usr/local/bin/pi-document-agent
 pi-document-agent
 ```
 
