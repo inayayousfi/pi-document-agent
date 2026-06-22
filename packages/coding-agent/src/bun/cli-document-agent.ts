@@ -14,9 +14,10 @@ restoreSandboxEnv();
 await import("./register-bedrock.ts");
 
 import documentAgentExtension from "../../examples/extensions/document-agent/index.ts";
+import type { ExtensionFactory } from "../core/extensions/types.ts";
 
 configureHttpDispatcher();
 
 main(process.argv.slice(2), {
-	extensionFactories: [documentAgentExtension],
+	extensionFactories: [documentAgentExtension as ExtensionFactory],
 });

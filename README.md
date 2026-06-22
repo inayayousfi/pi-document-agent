@@ -6,14 +6,14 @@ A terminal AI assistant with a built-in `query_document` tool that can read PDF 
 
 ### 1. Build the executable
 
-Requirements: [Node.js](https://nodejs.org) ≥ 22.19 and [Bun](https://bun.sh).
+Requirements: [Node.js](https://nodejs.org) ≥ 22.19.
 
 ```bash
 npm install --ignore-scripts
 npm run build:document-agent
 ```
 
-This produces `packages/coding-agent/dist/pi-document-agent` — a single self-contained binary.
+This produces `packages/coding-agent/dist/pi-document-agent.mjs` — a single bundled script.
 
 ### 2. Configure your endpoint
 
@@ -28,13 +28,13 @@ This is saved to `~/.pi/models.json` and never asked again. You can also run `/l
 ### 3. Run
 
 ```bash
-./packages/coding-agent/dist/pi-document-agent
+./packages/coding-agent/dist/pi-document-agent.mjs
 ```
 
-Or copy the binary anywhere on your `PATH`:
+Or copy it anywhere on your `PATH`:
 
 ```bash
-cp packages/coding-agent/dist/pi-document-agent /usr/local/bin/pi-document-agent
+cp packages/coding-agent/dist/pi-document-agent.mjs /usr/local/bin/pi-document-agent
 pi-document-agent
 ```
 
