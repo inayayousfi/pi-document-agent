@@ -13,11 +13,10 @@ restoreSandboxEnv();
 
 await import("./register-bedrock.ts");
 
-import documentAgentExtension from "../../examples/extensions/document-agent/index.ts";
-import type { ExtensionFactory } from "../core/extensions/types.ts";
+import documentAgentExtension from "../document-agent-extension.ts";
 
 configureHttpDispatcher();
 
 main(process.argv.slice(2), {
-	extensionFactories: [documentAgentExtension as ExtensionFactory],
+	extensionFactories: [documentAgentExtension],
 });
